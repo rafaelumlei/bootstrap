@@ -14,17 +14,23 @@ angular.module('ui.bootstrap.carousel', [])
     currentInterval, isPlaying;
   self.currentSlide = null;
 
+  // setting wrap as false if undefined
+  $scope.wrap = angular.isUndefined($scope.wrap)?true:$scope.wrap;
+  $scope.nextActive = true;
+  $scope.prevActive = true;
+
   var destroyed = false;
   /* direction: "prev" or "next" */
   self.select = $scope.select = function(nextSlide, direction) {
     var nextIndex = self.indexOfSlide(nextSlide);
     //Decide direction if it's not given
     if (direction === undefined) {
-      direction = nextIndex > self.getCurrentIndex() ? 'next' : 'prev';
+      direction = nextIndex > $scope.getCurrentIndex() ? 'next' : 'prev';
     }
     if (nextSlide && nextSlide !== self.currentSlide) {
       goNext();
     }
+    self.updateCarouselControls();
     function goNext() {
       // Scope has been destroyed, stop here.
       if (destroyed) { return; }
@@ -53,18 +59,65 @@ angular.module('ui.bootstrap.carousel', [])
       return slides[index];
     }
     var i, len = slides.length;
-    for (i = 0; i < slides.length; ++i) {
+    for (i = 0; i < len; ++i) {
       if (slides[i].index == index) {
         return slides[i];
       }
     }
   }
 
-  self.getCurrentIndex = function() {
+  $scope.getCurrentIndex = function() {
     if (self.currentSlide && angular.isDefined(self.currentSlide.index)) {
       return +self.currentSlide.index;
     }
     return currentIndex;
+  };
+
+  self.updateNextActive = function(){
+    // if wrap and there are slides -> true
+    // if wrap false and there are next slides -> true
+    // otherwise -> false    
+    if (slides.length !== 0)
+    {
+      if ($scope.wrap)
+      {
+        $scope.nextActive = true;
+        return;
+      }
+      else if (!$scope.wrap && ($scope.getCurrentIndex() + 1 < slides.length))
+      {
+        $scope.nextActive = true;
+        return;
+      }
+    }
+
+    $scope.nextActive = false;
+  };
+
+  self.updatePrevActive = function(){
+    // if wrap and there are slides -> true
+    // if wrap false and there are previous slides -> true
+    // otherwise -> false
+    if (slides.length !== 0)
+    {
+      if ($scope.wrap)
+      {
+        $scope.prevActive = true;
+        return;
+      }
+      else if (!$scope.wrap && ($scope.getCurrentIndex() - 1 >= 0))
+      {
+        $scope.prevActive = true;
+        return;
+      }
+    }
+    
+    $scope.prevActive = false;
+  };
+
+  self.updateCarouselControls = function (){
+    self.updatePrevActive();
+    self.updateNextActive();
   };
 
   /* Allow outside people to call indexOf on slides array */
@@ -73,20 +126,29 @@ angular.module('ui.bootstrap.carousel', [])
   };
 
   $scope.next = function() {
-    var newIndex = (self.getCurrentIndex() + 1) % slides.length;
+    // if wrap is not active stops the next action 
+    
+    if ($scope.nextActive)
+    {
+      var newIndex = ($scope.getCurrentIndex() + 1) % slides.length;
 
-    //Prevent this user-triggered transition from occurring if there is already one in progress
-    if (!$scope.$currentTransition) {
-      return self.select(getSlideByIndex(newIndex), 'next');
+      //Prevent this user-triggered transition from occurring if there is already one in progress
+      if (!$scope.$currentTransition) {
+        return self.select(getSlideByIndex(newIndex), 'next');
+      }
     }
   };
 
   $scope.prev = function() {
-    var newIndex = self.getCurrentIndex() - 1 < 0 ? slides.length - 1 : self.getCurrentIndex() - 1;
+    // if wrap is not active stops the next action     
+    if ($scope.prevActive)
+    {
+      var newIndex = $scope.getCurrentIndex() - 1 < 0 ? slides.length - 1 : $scope.getCurrentIndex() - 1;
 
-    //Prevent this user-triggered transition from occurring if there is already one in progress
-    if (!$scope.$currentTransition) {
-      return self.select(getSlideByIndex(newIndex), 'prev');
+      //Prevent this user-triggered transition from occurring if there is already one in progress
+      if (!$scope.$currentTransition) {
+        return self.select(getSlideByIndex(newIndex), 'prev');
+      }
     }
   };
 
@@ -146,6 +208,7 @@ angular.module('ui.bootstrap.carousel', [])
     } else {
       slide.active = false;
     }
+    self.updateCarouselControls();
   };
 
   self.removeSlide = function(slide) {
@@ -166,6 +229,7 @@ angular.module('ui.bootstrap.carousel', [])
     } else if (currentIndex > index) {
       currentIndex--;
     }
+    self.updateCarouselControls();
   };
 
 }])
@@ -181,6 +245,7 @@ angular.module('ui.bootstrap.carousel', [])
  * @param {number=} interval The time, in milliseconds, that it will take the carousel to go to the next slide.
  * @param {boolean=} noTransition Whether to disable transitions on the carousel.
  * @param {boolean=} noPause Whether to disable pausing on the carousel (by default, the carousel interval pauses on hover).
+ * €param {boolean=} wrap Whether the carousel should cycle continuously or have hard stops
  *
  * @example
 <example module="ui.bootstrap">
@@ -219,7 +284,8 @@ angular.module('ui.bootstrap.carousel', [])
     scope: {
       interval: '=',
       noTransition: '=',
-      noPause: '='
+      noPause: '=',
+      wrap: '='
     }
   };
 }])
