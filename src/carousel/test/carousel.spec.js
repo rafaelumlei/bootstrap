@@ -32,7 +32,7 @@ describe('carousel', function() {
         {active:false,content:'three'}
       ];
       elm = $compile(
-        '<carousel interval="interval" no-transition="true" no-pause="nopause">' +
+        '<carousel interval="interval" no-transition="true" no-pause="nopause" wrap="true">' +
           '<slide ng-repeat="slide in slides" active="slide.active">' +
             '{{slide.content}}' +
           '</slide>' +
@@ -77,7 +77,7 @@ describe('carousel', function() {
       scope.slides=[{active:false,content:'one'}];
       scope.$apply();
       elm = $compile(
-          '<carousel interval="interval" no-transition="true">' +
+          '<carousel interval="interval" no-transition="true" wrap="true">' +
             '<slide ng-repeat="slide in slides" active="slide.active">' +
               '{{slide.content}}' +
             '</slide>' +
@@ -276,7 +276,7 @@ describe('carousel', function() {
           {active:false,content:'three', id:3}
         ];
         elm = $compile(
-          '<carousel interval="interval" no-transition="true" no-pause="nopause">' +
+          '<carousel interval="interval" no-transition="true" no-pause="nopause" wrap="true">' +
             '<slide ng-repeat="slide in slides | orderBy: \'id\' " active="slide.active" index="$index">' +
               '{{slide.content}}' +
             '</slide>' +
