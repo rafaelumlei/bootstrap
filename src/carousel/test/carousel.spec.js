@@ -32,7 +32,7 @@ describe('carousel', function() {
         {active:false,content:'three'}
       ];
       elm = $compile(
-        '<carousel interval="interval" no-transition="true" no-pause="nopause" wrap="true">' +
+        '<carousel interval="interval" no-transition="true" no-pause="nopause">' +
           '<slide ng-repeat="slide in slides" active="slide.active">' +
             '{{slide.content}}' +
           '</slide>' +
@@ -77,7 +77,7 @@ describe('carousel', function() {
       scope.slides=[{active:false,content:'one'}];
       scope.$apply();
       elm = $compile(
-          '<carousel interval="interval" no-transition="true" wrap="true">' +
+          '<carousel interval="interval" no-transition="true">' +
             '<slide ng-repeat="slide in slides" active="slide.active">' +
               '{{slide.content}}' +
             '</slide>' +
@@ -254,6 +254,68 @@ describe('carousel', function() {
       testSlideActive(1);
     });
 
+    it('should stop navigation when wrap false', function () {
+      scope.slides = [
+        {active:false,content:'one'},
+        {active:false,content:'two'},
+        {active:false,content:'three'}
+      ];
+      elm = $compile(
+        '<carousel interval="interval" wrap="false">' +
+          '<slide ng-repeat="slide in slides" active="slide.active">' +
+            '{{slide.content}}' +
+          '</slide>' +
+        '</carousel>'
+      )(scope);
+      scope.$apply();
+
+      var navPrev = elm.find('a.left');
+      var navNext = elm.find('a.right');
+
+      testSlideActive(0);
+      navPrev.click();
+      testSlideActive(0);
+      navNext.click();
+      testSlideActive(1);
+      navNext.click();
+      testSlideActive(2);
+      navNext.click();
+      testSlideActive(2);
+    });    
+
+    it('should hide navigation when wrap false', function () {
+      scope.slides = [
+        {active:false,content:'one'},
+        {active:false,content:'two'},
+        {active:false,content:'three'}
+      ];
+      elm = $compile(
+        '<carousel interval="interval" wrap="false">' +
+          '<slide ng-repeat="slide in slides" active="slide.active">' +
+            '{{slide.content}}' +
+          '</slide>' +
+        '</carousel>'
+      )(scope);
+      scope.$apply();
+
+      var navPrev = elm.find('a.left');
+      var navNext = elm.find('a.right');
+
+      testSlideActive(0);
+      expect(navPrev.hasClass('ng-hide')).toBe(true);
+      expect(navNext.hasClass('ng-hide')).toBe(false);
+      navNext.click();
+      expect(navPrev.hasClass('ng-hide')).toBe(false);
+      expect(navNext.hasClass('ng-hide')).toBe(false);      
+      testSlideActive(1);
+      expect(navPrev.hasClass('ng-hide')).toBe(false);
+      expect(navNext.hasClass('ng-hide')).toBe(false);            
+      navNext.click();
+      testSlideActive(2);
+      expect(navPrev.hasClass('ng-hide')).toBe(false);
+      expect(navNext.hasClass('ng-hide')).toBe(true); 
+    });     
+
     it('issue 1414 - should not continue running timers after scope is destroyed', function() {
       testSlideActive(0);
       $interval.flush(scope.interval);
@@ -276,7 +338,7 @@ describe('carousel', function() {
           {active:false,content:'three', id:3}
         ];
         elm = $compile(
-          '<carousel interval="interval" no-transition="true" no-pause="nopause" wrap="true">' +
+          '<carousel interval="interval" no-transition="true" no-pause="nopause">' +
             '<slide ng-repeat="slide in slides | orderBy: \'id\' " active="slide.active" index="$index">' +
               '{{slide.content}}' +
             '</slide>' +
