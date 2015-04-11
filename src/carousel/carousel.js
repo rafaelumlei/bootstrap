@@ -13,9 +13,9 @@ angular.module('ui.bootstrap.carousel', [])
     currentIndex = -1,
     currentInterval, isPlaying;
   self.currentSlide = null;
-
+  
   // setting wrap as false if undefined
-  $scope.wrap = angular.isUndefined($scope.wrap)?true:$scope.wrap;
+  $scope.wrapValue = angular.isUndefined($scope.wrap)?true:$scope.wrap;  
   $scope.nextActive = true;
   $scope.prevActive = true;
 
@@ -29,8 +29,9 @@ angular.module('ui.bootstrap.carousel', [])
     }
     if (nextSlide && nextSlide !== self.currentSlide) {
       goNext();
+      self.updateCarouselControls();
     }
-    self.updateCarouselControls();
+    
     function goNext() {
       // Scope has been destroyed, stop here.
       if (destroyed) { return; }
@@ -79,12 +80,12 @@ angular.module('ui.bootstrap.carousel', [])
     // otherwise -> false    
     if (slides.length !== 0)
     {
-      if ($scope.wrap)
+      if ($scope.wrapValue)
       {
         $scope.nextActive = true;
         return;
       }
-      else if (!$scope.wrap && ($scope.getCurrentIndex() + 1 < slides.length))
+      else if ($scope.getCurrentIndex() + 1 < slides.length)
       {
         $scope.nextActive = true;
         return;
@@ -100,12 +101,12 @@ angular.module('ui.bootstrap.carousel', [])
     // otherwise -> false
     if (slides.length !== 0)
     {
-      if ($scope.wrap)
+      if ($scope.wrapValue)
       {
         $scope.prevActive = true;
         return;
       }
-      else if (!$scope.wrap && ($scope.getCurrentIndex() - 1 >= 0))
+      else if ($scope.getCurrentIndex() - 1 >= 0)
       {
         $scope.prevActive = true;
         return;
@@ -126,8 +127,7 @@ angular.module('ui.bootstrap.carousel', [])
   };
 
   $scope.next = function() {
-    // if wrap is not active stops the next action 
-    
+    // if wrap is not active stops the next action     
     if ($scope.nextActive)
     {
       var newIndex = ($scope.getCurrentIndex() + 1) % slides.length;
