@@ -252,7 +252,7 @@ angular.module('ui.bootstrap.carousel', [])
  * @param {number=} interval The time, in milliseconds, that it will take the carousel to go to the next slide.
  * @param {boolean=} noTransition Whether to disable transitions on the carousel.
  * @param {boolean=} noPause Whether to disable pausing on the carousel (by default, the carousel interval pauses on hover).
- * €param {boolean=} wrap Whether the carousel should cycle continuously or have hard stops
+ * @param {boolean=} wrap Whether the carousel should cycle continuously or have hard stops
  *
  * @example
 <example module="ui.bootstrap">
