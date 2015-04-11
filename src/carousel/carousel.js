@@ -25,7 +25,7 @@ angular.module('ui.bootstrap.carousel', [])
     var nextIndex = self.indexOfSlide(nextSlide);
     //Decide direction if it's not given
     if (direction === undefined) {
-      direction = nextIndex > $scope.getCurrentIndex() ? 'next' : 'prev';
+      direction = nextIndex > self.getCurrentIndex() ? 'next' : 'prev';
     }
     if (nextSlide && nextSlide !== self.currentSlide) {
       goNext();
@@ -67,7 +67,7 @@ angular.module('ui.bootstrap.carousel', [])
     }
   }
 
-  $scope.getCurrentIndex = function() {
+  self.getCurrentIndex = function() {
     if (self.currentSlide && angular.isDefined(self.currentSlide.index)) {
       return +self.currentSlide.index;
     }
@@ -85,7 +85,7 @@ angular.module('ui.bootstrap.carousel', [])
         $scope.nextActive = true;
         return;
       }
-      else if ($scope.getCurrentIndex() + 1 < slides.length)
+      else if (self.getCurrentIndex() + 1 < slides.length)
       {
         $scope.nextActive = true;
         return;
@@ -106,7 +106,7 @@ angular.module('ui.bootstrap.carousel', [])
         $scope.prevActive = true;
         return;
       }
-      else if ($scope.getCurrentIndex() - 1 >= 0)
+      else if (self.getCurrentIndex() - 1 >= 0)
       {
         $scope.prevActive = true;
         return;
@@ -130,7 +130,7 @@ angular.module('ui.bootstrap.carousel', [])
     // if wrap is not active stops the next action     
     if ($scope.nextActive)
     {
-      var newIndex = ($scope.getCurrentIndex() + 1) % slides.length;
+      var newIndex = (self.getCurrentIndex() + 1) % slides.length;
 
       //Prevent this user-triggered transition from occurring if there is already one in progress
       if (!$scope.$currentTransition) {
@@ -143,7 +143,7 @@ angular.module('ui.bootstrap.carousel', [])
     // if wrap is not active stops the next action     
     if ($scope.prevActive)
     {
-      var newIndex = $scope.getCurrentIndex() - 1 < 0 ? slides.length - 1 : $scope.getCurrentIndex() - 1;
+      var newIndex = self.getCurrentIndex() - 1 < 0 ? slides.length - 1 : self.getCurrentIndex() - 1;
 
       //Prevent this user-triggered transition from occurring if there is already one in progress
       if (!$scope.$currentTransition) {
@@ -155,6 +155,13 @@ angular.module('ui.bootstrap.carousel', [])
   $scope.isActive = function(slide) {
      return self.currentSlide === slide;
   };
+
+  $scope.$watch('wrap', updateWrapStatus);
+
+  function updateWrapStatus() {
+    $scope.wrapValue = angular.isUndefined($scope.wrap)?true:$scope.wrap;  
+    self.updateCarouselControls();    
+  }
 
   $scope.$watch('interval', restartTimer);
   $scope.$on('$destroy', resetTimer);
