@@ -254,7 +254,7 @@ describe('carousel', function() {
       testSlideActive(1);
     });
 
-    it('should stop navigation when wrap false', function () {
+    it('should stop navigation when wrap is false', function () {
       scope.slides = [
         {active:false,content:'one'},
         {active:false,content:'two'},
@@ -283,7 +283,7 @@ describe('carousel', function() {
       testSlideActive(2);
     });    
 
-    it('should hide navigation when wrap false', function () {
+    it('should hide navigation when wrap is false', function () {
       scope.slides = [
         {active:false,content:'one'},
         {active:false,content:'two'},
